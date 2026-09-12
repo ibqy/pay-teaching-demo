@@ -15,10 +15,11 @@ import java.io.InputStream;
 public interface BillDownloader {
 
     /**
-     * 下载指定日期的对账单
+     * 下载指定渠道、指定日期的对账单
      *
+     * @param channel  渠道标识（ALIPAY / WECHAT）
      * @param billDate 账单日期，格式 yyyy-MM-dd
      * @return 账单文件输入流（调用方负责关闭）
      */
-    InputStream download(String billDate);
+    InputStream download(String channel, String billDate);
 }

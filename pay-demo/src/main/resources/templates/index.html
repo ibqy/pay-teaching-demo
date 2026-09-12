@@ -30,7 +30,7 @@
 <body>
 <div class="wrap">
     <h1>支付对接教学 Demo</h1>
-    <p class="sub">支付宝 · 微信支付 ｜ 统一下单 → 查询 → 退款 → 关单</p>
+    <p class="sub">支付宝 · 微信支付 ｜ 统一下单 → 查询 → 退款 → 关单 → 对账</p>
 
     <div class="card">
         <h2>📦 统一下单</h2>
@@ -76,6 +76,15 @@
         <pre id="refundResult">等待退款...</pre>
     </div>
 
+    <div class="card">
+        <h2>📊 对账（T+1 模拟）</h2>
+        <div class="row">
+            <button onclick="recon('alipay')">支付宝对账</button>
+            <button class="sec" onclick="recon('wechat')">微信对账</button>
+        </div>
+        <pre id="reconResult">点击触发对账...</pre>
+    </div>
+
     <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
         <span class="tag">统一下单</span>
         <span class="tag">异步通知</span>
@@ -83,6 +92,8 @@
         <span class="tag">订单查询</span>
         <span class="tag">退款</span>
         <span class="tag">关单</span>
+        <span class="tag">对账</span>
+        <span class="tag">长款/短款</span>
         <span class="tag">幂等性</span>
         <span class="tag">元/分转换</span>
     </div>
@@ -140,6 +151,15 @@
         el.textContent = '退款中...';
         try {
             const data = await req('POST', `/api/refund/${ch}`, {outTradeNo: no, refundAmount: amt, reason: '教学测试退款'});
+            el.textContent = JSON.stringify(data, null, 2);
+        } catch (e) { el.textContent = '失败: ' + e.message; }
+    }
+
+    async function recon(channel) {
+        const el = document.getElementById('reconResult');
+        el.textContent = '对账中...';
+        try {
+            const data = await req('GET', `/api/recon/${channel}`);
             el.textContent = JSON.stringify(data, null, 2);
         } catch (e) { el.textContent = '失败: ' + e.message; }
     }

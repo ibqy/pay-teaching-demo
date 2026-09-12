@@ -54,7 +54,7 @@ public class ReconciliationEngine {
      */
     public ReconReport reconcile(List<LocalOrderRecord> localRecords) {
         // ① 下载账单
-        InputStream billStream = downloader.download(billDate);
+        InputStream billStream = downloader.download(channel, billDate);
 
         // ② 解析账单
         List<ChannelBillRecord> channelRecords = parser.parse(billStream);
