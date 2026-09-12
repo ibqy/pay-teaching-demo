@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent><groupId>com.xb</groupId><artifactId>pay-teaching-demo</artifactId><version>1.0.0</version></parent>
+    <artifactId>reconciliation</artifactId>
+    <packaging>jar</packaging>
+    <description>对账模块：渠道账单下载 → 解析 → 比对 → 差异报告（作者 xb）</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.xb</groupId>
+            <artifactId>pay-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.12.0</version>
+        </dependency>
+    </dependencies>
+</project>

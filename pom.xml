@@ -10,7 +10,8 @@
     2. pay-core    —— 统一支付接口 + 策略工厂
     3. pay-alipay  —— 支付宝 SDK 对接实现
     4. pay-wechat  —— 微信支付 SDK 对接实现
-    5. pay-demo    —— Spring Boot 演示应用（Controller + 通知接收）
+    5. reconciliation —— 对账模块（渠道账单下载 → 解析 → 比对 → 差异报告）
+    6. pay-demo    —— Spring Boot 演示应用（Controller + 通知接收）
   ============================================================
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -29,6 +30,7 @@
         <module>pay-core</module>
         <module>pay-alipay</module>
         <module>pay-wechat</module>
+        <module>reconciliation</module>
         <module>pay-demo</module>
     </modules>
 

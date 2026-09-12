@@ -3,20 +3,20 @@
 > 作者：xb ｜ 日期：2026-09-12
 >
 > 支付宝 + 微信支付官方 SDK 对接实战项目，覆盖支付对接全流程：
-> **下单 → 异步通知 → 查询 → 退款 → 关单**，一步不落。
+> **下单 → 异步通知 → 查询 → 退款 → 关单  → 对账**，一步不落。
 
 ## 架构
 
 ```
         ┌───────────────── pay-demo ─────────────────┐
         │  PayDemoController   +   index.html (UI)    │
-        └────────────────────┬────────────────────────┘
-                             │
-        ┌────────────────────┴────────────────────────┐
-        │            pay-core (统一接口)                │
-        │   UnifiedPayService  +  PayStrategyFactory   │
-        └──────┬─────────────────────────┬────────────┘
-               │                         │
+        └──────┬─────────────────────┬────────────────┘
+               │                     │
+        ┌──────┴────────────┐ ┌──────┴──────────────┐
+        │   pay-core        │ │ reconciliation      │
+        │ 统一支付接口+工厂  │ │ 对账引擎+账单解析    │
+        └──────┬────────────┘ └─────────────────────┘
+               │
         ┌──────┴──────┐          ┌───────┴───────┐
         │ pay-alipay  │          │  pay-wechat   │
         │ alipay-sdk  │          │ wechatpay-java│
@@ -26,7 +26,7 @@
                支付模型 / 枚举 / 异常 / 工具
 ```
 
-## 5 模块
+## 6 模块
 
 | 模块 | 内容 | 官方 SDK |
 |------|------|----------|
@@ -34,6 +34,7 @@
 | [`pay-core`](pay-core) | UnifiedPayService 统一接口 + PayStrategyFactory 策略工厂 | — |
 | [`pay-alipay`](pay-alipay) | Alipay 对接：下单/查询/退款/关单/通知验签 | alipay-sdk-java |
 | [`pay-wechat`](pay-wechat) | WeChat 对接：下单/查询/退款/关单/通知验签 | wechatpay-java |
+| [`reconciliation`](reconciliation) | 对账引擎：账单下载 → CSV解析 → 逐笔比对 → 差异报告 | commons-csv |
 | [`pay-demo`](pay-demo) | Spring Boot 演示（Controller + 前端 UI + 配置） | — |
 
 ## 覆盖的知识点
@@ -49,6 +50,9 @@
 | **状态机** | 交易状态流转 | `TradeStatus` 枚举 |
 | **异常处理** | 业务异常 vs 系统异常 | `PayException` |
 | **订单号** | 唯一订单号生成策略 | `OrderNoGenerator` |
+| **对账** | 渠道账单下载 → CSV解析 → 逐笔比对 → 差异报告 | `ReconciliationEngine` |
+| **差异分析** | 长款/短款/金额不符/时间偏差 | `ReconDiff` |
+| **单位转换** | 微信对账单金额单位"分"转"元" | `WechatCsvParser` |
 
 ## 快速启动
 
@@ -109,6 +113,12 @@ pay-teaching-demo/
 │   └── src/main/java/com/xb/pay/wechat/
 │       ├── config/      WechatPayConfig
 │       └── service/     WechatPayServiceImpl
+├── reconciliation/                  # 对账模块
+│   └── src/main/java/com/xb/pay/reconciliation/
+│       ├── model/       ChannelBillRecord, ReconDiff, ReconReport
+│       ├── parser/      BillParser(接口), AlipayCsvParser, WechatCsvParser
+│       ├── downloader/  BillDownloader(接口)
+│       └── engine/      ReconciliationEngine
 ├── pay-demo/                        # 演示应用
 │   └── src/main/
 │       ├── java/com/xb/pay/demo/
