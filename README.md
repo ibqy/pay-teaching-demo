@@ -1,0 +1,132 @@
+# 💳 支付对接教学项目
+
+> 作者：xb ｜ 日期：2026-09-12
+>
+> 支付宝 + 微信支付官方 SDK 对接实战项目，覆盖支付对接全流程：
+> **下单 → 异步通知 → 查询 → 退款 → 关单**，一步不落。
+
+## 架构
+
+```
+        ┌───────────────── pay-demo ─────────────────┐
+        │  PayDemoController   +   index.html (UI)    │
+        └────────────────────┬────────────────────────┘
+                             │
+        ┌────────────────────┴────────────────────────┐
+        │            pay-core (统一接口)                │
+        │   UnifiedPayService  +  PayStrategyFactory   │
+        └──────┬─────────────────────────┬────────────┘
+               │                         │
+        ┌──────┴──────┐          ┌───────┴───────┐
+        │ pay-alipay  │          │  pay-wechat   │
+        │ alipay-sdk  │          │ wechatpay-java│
+        └─────────────┘          └───────────────┘
+               │                         │
+               └─────── common ──────────┘
+               支付模型 / 枚举 / 异常 / 工具
+```
+
+## 5 模块
+
+| 模块 | 内容 | 官方 SDK |
+|------|------|----------|
+| [`common`](common) | 支付模型、枚举、异常、单号生成 | — |
+| [`pay-core`](pay-core) | UnifiedPayService 统一接口 + PayStrategyFactory 策略工厂 | — |
+| [`pay-alipay`](pay-alipay) | Alipay 对接：下单/查询/退款/关单/通知验签 | alipay-sdk-java |
+| [`pay-wechat`](pay-wechat) | WeChat 对接：下单/查询/退款/关单/通知验签 | wechatpay-java |
+| [`pay-demo`](pay-demo) | Spring Boot 演示（Controller + 前端 UI + 配置） | — |
+
+## 覆盖的知识点
+
+| 类别 | 知识点 | 对应代码 |
+|------|--------|----------|
+| **支付流程** | 统一下单 → 异步通知 → 查询 → 退款 → 关单 | `PayDemoController` |
+| **设计模式** | 策略模式（多支付渠道） | `UnifiedPayService` + `PayStrategyFactory` |
+| **签名验签** | RSA2 签名 / Wechatpay-Signature 验签 | `AlipayPayServiceImpl` / `WechatPayServiceImpl` |
+| **幂等性** | 异步通知必须去重处理 | `NotifyResult` |
+| **金额单位** | 支付宝"元" / 微信"分" 转换 | `yuanToFen` / `fenToYuan` |
+| **沙箱环境** | 支付宝沙箱地址 vs 生产地址 | `application.yml` |
+| **状态机** | 交易状态流转 | `TradeStatus` 枚举 |
+| **异常处理** | 业务异常 vs 系统异常 | `PayException` |
+| **订单号** | 唯一订单号生成策略 | `OrderNoGenerator` |
+
+## 快速启动
+
+```bash
+# 前置：JDK 21+、Maven 3.9+
+cd pay-teaching-demo
+
+# 启动（无需构建）
+mvn -pl pay-demo spring-boot-run
+
+# 打开浏览器访问
+open http://localhost:8080
+```
+
+启动后可以在线演示：支付宝扫码下单 → 查询 → 退款全流程。
+
+## 对接前需要准备的配置
+
+### 支付宝
+1. 登录 [open.alipay.com](https://open.alipay.com) → 创建网页/移动应用
+2. 获取 AppId、生成应用私钥、设置支付宝公钥
+3. 配置接口加签方式（RSA2）
+4. 设置授权回调地址（notifyUrl、returnUrl）
+
+### 微信支付
+1. 登录 [pay.weixin.qq.com](https://pay.weixin.qq.com) → 开通商户号
+2. 获取商户号 mchId、设置 APIv3 密钥
+3. 生成商户证书（私钥 + 证书序列号）
+4. 设置支付回调通知地址
+
+### 开发环境
+两个渠道都提供沙箱环境：
+- **支付宝沙箱**：`gatewayUrl` 用 sandbox 地址，配套沙箱版 APP 扫码
+- **微信沙箱**：使用测试商户号 + 测试款
+
+配置填写在 `pay-demo/src/main/resources/application.yml`。
+
+## 目录结构
+
+```
+pay-teaching-demo/
+├── pom.xml                          # 聚合父工程
+├── common/                          # 公共模块
+│   └── src/main/java/com/xb/pay/common/
+│       ├── enums/    PayChannel, PayMethod, TradeStatus
+│       ├── model/    PayOrder, PayResponse, NotifyResult, RefundRequest/Response
+│       ├── exception/PayException
+│       └── util/     OrderNoGenerator
+├── pay-core/                        # 支付核心（统一接口 + 策略工厂）
+│   └── src/main/java/com/xb/pay/core/
+│       ├── api/         UnifiedPayService
+│       └── strategy/    PayStrategyFactory
+├── pay-alipay/                      # 支付宝对接
+│   └── src/main/java/com/xb/pay/alipay/
+│       ├── config/      AlipayConfig
+│       └── service/     AlipayPayServiceImpl
+├── pay-wechat/                      # 微信支付对接
+│   └── src/main/java/com/xb/pay/wechat/
+│       ├── config/      WechatPayConfig
+│       └── service/     WechatPayServiceImpl
+├── pay-demo/                        # 演示应用
+│   └── src/main/
+│       ├── java/com/xb/pay/demo/
+│       │   ├── PayDemoApplication
+│       │   ├── config/   PayConfig
+│       │   └── controller/PayDemoController
+│       └── resources/
+│           ├── application.yml
+│           └── templates/index.html
+├── docs/                            # 教学文档
+│   └── 01-pay-knowledge.md
+└── README.md
+```
+
+## License
+
+仅用于教学交流，作者：xb
+
+<p align="center">
+  <a href="https://github.com/ibqy">🏠 回到 ibqy 主页</a> · <a href="https://ibqy.github.io">🌐 作品集</a>
+</p>

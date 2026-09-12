@@ -1,0 +1,29 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: pay-teaching-demo
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+
+# ===== 支付宝配置（演示用，需替换为真实配置） =====
+pay:
+  alipay:
+    gateway-url: https://openapi-sandbox.dl.alipaydev.com/gateway.do
+    app-id: 2021000000000000
+    app-private-key: "请替换为应用私钥"
+    alipay-public-key: "请替换为支付宝公钥"
+    sign-type: RSA2
+    notify-url: http://你的域名/api/notify/alipay
+    return-url: http://你的域名/api/return
+
+# ===== 微信支付配置（演示用，需替换为真实配置） =====
+  wechat:
+    mch-id: "请替换为商户号"
+    api-v-3-key: "请替换为APIv3密钥"
+    private-key: "请替换为商户私钥"
+    merchant-serial-no: "请替换为证书序列号"
+    app-id: "请替换为AppId"
+    notify-url: http://你的域名/api/notify/wechat

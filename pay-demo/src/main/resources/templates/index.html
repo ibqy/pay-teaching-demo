@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付教学 Demo</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a1a;color:#e8e8f0;padding:40px 20px}
+        .wrap{max-width:800px;margin:0 auto}
+        h1{background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:32px;margin-bottom:8px}
+        .sub{color:#8888aa;font-size:14px;margin-bottom:32px}
+        .card{background:#12122a;border:1px solid #1a1a3a;border-radius:12px;padding:24px;margin-bottom:20px}
+        .card h2{font-size:16px;color:#667eea;margin-bottom:16px}
+        .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+        .row:last-child{margin-bottom:0}
+        label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#8888aa;flex:1;min-width:120px}
+        input,select{background:#1a1a3a;border:1px solid #2a2a5a;border-radius:6px;padding:8px 12px;color:#e8e8f0;font-size:14px;outline:none}
+        input:focus,select:focus{border-color:#667eea}
+        button{background:linear-gradient(135deg,#667eea,#764ba2);border:none;border-radius:6px;padding:8px 20px;color:#fff;font-size:14px;cursor:pointer}
+        button:hover{opacity:.85}
+        button.sec{background:transparent;border:1px solid #667eea;color:#667eea}
+        pre{background:#0a0a1a;border-radius:6px;padding:16px;font-size:12px;color:#a8aabb;overflow:auto;max-height:300px;margin-top:12px}
+        .tag{display:inline-block;background:rgba(102,126,234,.15);color:#667eea;border-radius:4px;padding:2px 8px;font-size:11px;margin-right:4px}
+        a{color:#667eea;text-decoration:none}
+        a:hover{text-decoration:underline}
+        .footer{text-align:center;color:#555577;font-size:12px;margin-top:40px}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>支付对接教学 Demo</h1>
+    <p class="sub">支付宝 · 微信支付 ｜ 统一下单 → 查询 → 退款 → 关单</p>
+
+    <div class="card">
+        <h2>📦 统一下单</h2>
+        <div class="row">
+            <label>支付渠道
+                <select id="channel"><option value="ALIPAY">支付宝</option><option value="WECHAT">微信</option></select>
+            </label>
+            <label>支付方式
+                <select id="method"><option value="NATIVE">扫码付款</option><option value="H5">手机网页</option><option value="APP">APP 支付</option></select>
+            </label>
+            <label>金额（元）
+                <input id="amount" value="0.01" />
+            </label>
+        </div>
+        <button onclick="pay()">🚀 发起支付</button>
+        <pre id="payResult">点击发起支付...</pre>
+    </div>
+
+    <div class="card">
+        <h2>🔍 查询订单</h2>
+        <div class="row">
+            <label>渠道
+                <select id="qChannel"><option value="ALIPAY">支付宝</option><option value="WECHAT">微信</option></select>
+            </label>
+            <label>商户订单号
+                <input id="outTradeNo" placeholder="下单后自动填充" />
+            </label>
+        </div>
+        <button class="sec" onclick="query()">查询</button>
+        <pre id="queryResult">等待查询...</pre>
+    </div>
+
+    <div class="card">
+        <h2>💰 退款</h2>
+        <div class="row">
+            <label>渠道
+                <select id="rChannel"><option value="ALIPAY">支付宝</option><option value="WECHAT">微信</option></select>
+            </label>
+            <label>订单号 <input id="rOutTradeNo" placeholder="要退款的订单号" /></label>
+            <label>金额 <input id="rAmount" value="0.01" /></label>
+        </div>
+        <button class="sec" onclick="refund()">退款</button>
+        <pre id="refundResult">等待退款...</pre>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <span class="tag">统一下单</span>
+        <span class="tag">异步通知</span>
+        <span class="tag">签名验签</span>
+        <span class="tag">订单查询</span>
+        <span class="tag">退款</span>
+        <span class="tag">关单</span>
+        <span class="tag">幂等性</span>
+        <span class="tag">元/分转换</span>
+    </div>
+
+    <div class="footer">
+        <a href="https://github.com/ibqy/pay-teaching-demo">📖 项目源码</a> ｜
+        <a href="https://github.com/ibqy">🏠 回到 ibqy 主页</a>
+    </div>
+</div>
+
+<script>
+    async function req(method, url, body) {
+        const r = await fetch(url, {
+            method,
+            headers: {'Content-Type': 'application/json'},
+            body: body ? JSON.stringify(body) : undefined
+        });
+        return r.json();
+    }
+
+    async function pay() {
+        const ch = document.getElementById('channel').value;
+        const m = document.getElementById('method').value;
+        const amt = document.getElementById('amount').value;
+        const el = document.getElementById('payResult');
+        el.textContent = '支付中...';
+        try {
+            const data = await req('POST', `/api/pay/${ch}/${m}?amount=${amt}&description=教学测试商品`);
+            el.textContent = JSON.stringify(data, null, 2);
+            if (data.outTradeNo) {
+                document.getElementById('outTradeNo').value = data.outTradeNo;
+                document.getElementById('rOutTradeNo').value = data.outTradeNo;
+            }
+        } catch (e) {
+            el.textContent = '请求失败: ' + e.message;
+        }
+    }
+
+    async function query() {
+        const ch = document.getElementById('qChannel').value;
+        const no = document.getElementById('outTradeNo').value || 'demo';
+        const el = document.getElementById('queryResult');
+        el.textContent = '查询中...';
+        try {
+            const data = await req('GET', `/api/query/${ch}/${no}`);
+            el.textContent = JSON.stringify(data, null, 2);
+        } catch (e) { el.textContent = '失败: ' + e.message; }
+    }
+
+    async function refund() {
+        const ch = document.getElementById('rChannel').value;
+        const no = document.getElementById('rOutTradeNo').value;
+        const amt = document.getElementById('rAmount').value;
+        const el = document.getElementById('refundResult');
+        el.textContent = '退款中...';
+        try {
+            const data = await req('POST', `/api/refund/${ch}`, {outTradeNo: no, refundAmount: amt, reason: '教学测试退款'});
+            el.textContent = JSON.stringify(data, null, 2);
+        } catch (e) { el.textContent = '失败: ' + e.message; }
+    }
+</script>
+</body>
+</html>

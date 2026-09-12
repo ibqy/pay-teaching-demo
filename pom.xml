@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================
+  支付对接教学项目（支付宝 + 微信支付）
+  作者：xb  |  日期：2026-09-12
+  说明：本工程演示支付宝（alipay-sdk-java）和微信支付（wechatpay-java）
+        官方 SDK 的对接流程，覆盖：下单 → 异步通知 → 查询 → 退款 → 关单
+  模块列表：
+    1. common      —— 支付模型、枚举、异常、签名工具
+    2. pay-core    —— 统一支付接口 + 策略工厂
+    3. pay-alipay  —— 支付宝 SDK 对接实现
+    4. pay-wechat  —— 微信支付 SDK 对接实现
+    5. pay-demo    —— Spring Boot 演示应用（Controller + 通知接收）
+  ============================================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.xb</groupId>
+    <artifactId>pay-teaching-demo</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>pay-teaching-demo</name>
+    <description>支付宝+微信支付对接教学项目（作者 xb）</description>
+
+    <modules>
+        <module>common</module>
+        <module>pay-core</module>
+        <module>pay-alipay</module>
+        <module>pay-wechat</module>
+        <module>pay-demo</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <spring-boot.version>3.4.4</spring-boot.version>
+        <alipay-sdk.version>4.39.233.ALL</alipay-sdk.version>
+        <wechatpay-sdk.version>0.4.12</wechatpay-sdk.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
