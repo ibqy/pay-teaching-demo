@@ -20,20 +20,23 @@
         button{background:linear-gradient(135deg,#667eea,#764ba2);border:none;border-radius:6px;padding:8px 20px;color:#fff;font-size:14px;cursor:pointer}
         button:hover{opacity:.85}
         button.sec{background:transparent;border:1px solid #667eea;color:#667eea}
+        btn-auto{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#000;border:none;border-radius:6px;padding:8px 20px;font-size:14px;cursor:pointer}
+        btn-auto:hover{opacity:.85}
         pre{background:#0a0a1a;border-radius:6px;padding:16px;font-size:12px;color:#a8aabb;overflow:auto;max-height:300px;margin-top:12px}
         .tag{display:inline-block;background:rgba(102,126,234,.15);color:#667eea;border-radius:4px;padding:2px 8px;font-size:11px;margin-right:4px}
         a{color:#667eea;text-decoration:none}
         a:hover{text-decoration:underline}
         .footer{text-align:center;color:#555577;font-size:12px;margin-top:40px}
+        .badge{display:inline-block;background:#e74c3c;color:#fff;border-radius:10px;padding:0 6px;font-size:10px;margin-left:4px}
     </style>
 </head>
 <body>
 <div class="wrap">
     <h1>支付对接教学 Demo</h1>
-    <p class="sub">支付宝 · 微信支付 ｜ 统一下单 → 查询 → 退款 → 关单 → 对账</p>
+    <p class="sub">支付宝 · 微信支付 ｜ 下单 → 通知 → 查询 → 退款 → 对账 ｜ DB+幂等+事件+路由</p>
 
     <div class="card">
-        <h2>📦 统一下单</h2>
+        <h2>统一下单</h2>
         <div class="row">
             <label>支付渠道
                 <select id="channel"><option value="ALIPAY">支付宝</option><option value="WECHAT">微信</option></select>
@@ -45,26 +48,25 @@
                 <input id="amount" value="0.01" />
             </label>
         </div>
-        <button onclick="pay()">🚀 发起支付</button>
+        <div class="row">
+            <button onclick="pay()">手动下单</button>
+            <button class="sec" onclick="payAuto()">自动路由下单</button>
+        </div>
         <pre id="payResult">点击发起支付...</pre>
     </div>
 
     <div class="card">
-        <h2>🔍 查询订单</h2>
+        <h2>查询订单（DB）</h2>
         <div class="row">
-            <label>渠道
-                <select id="qChannel"><option value="ALIPAY">支付宝</option><option value="WECHAT">微信</option></select>
-            </label>
             <label>商户订单号
-                <input id="outTradeNo" placeholder="下单后自动填充" />
-            </label>
+                <input id="outTradeNo" placeholder="下单后自动填充" /></label>
         </div>
         <button class="sec" onclick="query()">查询</button>
         <pre id="queryResult">等待查询...</pre>
     </div>
 
     <div class="card">
-        <h2>💰 退款</h2>
+        <h2>退款</h2>
         <div class="row">
             <label>渠道
                 <select id="rChannel"><option value="ALIPAY">支付宝</option><option value="WECHAT">微信</option></select>
@@ -77,7 +79,7 @@
     </div>
 
     <div class="card">
-        <h2>📊 对账（T+1 模拟）</h2>
+        <h2>对账（T+1 模拟）</h2>
         <div class="row">
             <button onclick="recon('alipay')">支付宝对账</button>
             <button class="sec" onclick="recon('wechat')">微信对账</button>
@@ -85,22 +87,30 @@
         <pre id="reconResult">点击触发对账...</pre>
     </div>
 
+    <div class="card">
+        <h2>死信队列 DLQ</h2>
+        <button class="sec" onclick="viewDlq()">查看死信</button>
+        <pre id="dlqResult">等待查看...</pre>
+    </div>
+
     <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
         <span class="tag">统一下单</span>
+        <span class="tag">自动路由</span>
         <span class="tag">异步通知</span>
         <span class="tag">签名验签</span>
-        <span class="tag">订单查询</span>
-        <span class="tag">退款</span>
-        <span class="tag">关单</span>
+        <span class="tag">DB持久化</span>
+        <span class="tag">@Transactional</span>
+        <span class="tag">@Idempotent</span>
+        <span class="tag">事件驱动</span>
+        <span class="tag">死信队列</span>
         <span class="tag">对账</span>
         <span class="tag">长款/短款</span>
-        <span class="tag">幂等性</span>
         <span class="tag">元/分转换</span>
     </div>
 
     <div class="footer">
-        <a href="https://github.com/ibqy/pay-teaching-demo">📖 项目源码</a> ｜
-        <a href="https://github.com/ibqy">🏠 回到 ibqy 主页</a>
+        <a href="https://github.com/ibqy/pay-teaching-demo">项目源码</a> ｜
+        <a href="https://github.com/ibqy">回到 ibqy 主页</a>
     </div>
 </div>
 
@@ -132,13 +142,27 @@
         }
     }
 
+    async function payAuto() {
+        const m = document.getElementById('method').value;
+        const amt = document.getElementById('amount').value;
+        const el = document.getElementById('payResult');
+        el.textContent = '路由中...';
+        try {
+            const data = await req('POST', `/api/pay/auto/${m}?amount=${amt}&description=自动路由商品`);
+            el.textContent = JSON.stringify(data, null, 2);
+            if (data.outTradeNo) {
+                document.getElementById('outTradeNo').value = data.outTradeNo;
+                document.getElementById('rOutTradeNo').value = data.outTradeNo;
+            }
+        } catch (e) { el.textContent = '失败: ' + e.message; }
+    }
+
     async function query() {
-        const ch = document.getElementById('qChannel').value;
         const no = document.getElementById('outTradeNo').value || 'demo';
         const el = document.getElementById('queryResult');
         el.textContent = '查询中...';
         try {
-            const data = await req('GET', `/api/query/${ch}/${no}`);
+            const data = await req('GET', `/api/query/${no}`);
             el.textContent = JSON.stringify(data, null, 2);
         } catch (e) { el.textContent = '失败: ' + e.message; }
     }
@@ -161,6 +185,15 @@
         try {
             const data = await req('GET', `/api/recon/${channel}`);
             el.textContent = JSON.stringify(data, null, 2);
+        } catch (e) { el.textContent = '失败: ' + e.message; }
+    }
+
+    async function viewDlq() {
+        const el = document.getElementById('dlqResult');
+        el.textContent = '加载中...';
+        try {
+            const data = await req('GET', '/api/dlq');
+            el.textContent = data.length === 0 ? '死信队列为空' : JSON.stringify(data, null, 2);
         } catch (e) { el.textContent = '失败: ' + e.message; }
     }
 </script>
