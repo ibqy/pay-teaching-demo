@@ -249,23 +249,59 @@ public class AlipayPayServiceImpl implements UnifiedPayService {
 
     @Override
     public NotifyResult parseNotify(String rawBody, String signature, String channel) {
-        // 支付宝通知：参数在 rawBody 中，签名在 sign 参数中
-        // 通知格式：application/x-www-form-urlencoded → Map
-        // 此处简化，实际需调用 AlipaySignature.rsaCheckV1 验签
-        // 下面演示实际项目中验签和解析的完整流程
+        // 支付宝通知格式：application/x-www-form-urlencoded → Map
+        // 参数包含 sign（签名）和 sign_type（签名类型）两个字段
+        Map<String, String> params = parseFormBody(rawBody);
 
-        // 实际验签代码（注释掉，仅展示）：
-        // boolean signVerified = AlipaySignature.rsaCheckV1(paramsMap, config.alipayPublicKey(), "UTF-8", "RSA2");
-        // if (!signVerified) throw new PayException("SIGN_FAIL", "支付宝通知验签失败");
+        // 第一步：验签 — 使用支付宝公钥验证通知参数未被篡改
+        boolean signVerified;
+        try {
+            signVerified = AlipaySignature.rsaCheckV1(
+                params,
+                config.alipayPublicKey(),
+                "UTF-8",
+                config.signType()
+            );
+        } catch (AlipayApiException e) {
+            throw new PayException("SIGN_FAIL", "支付宝通知验签异常：" + e.getMessage());
+        }
+        if (!signVerified) {
+            throw new PayException("SIGN_FAIL", "支付宝通知验签失败，签名不匹配");
+        }
 
-        // 解析通知参数...
+        // 第二步：解析通知参数
         var result = new NotifyResult();
         result.setChannel("alipay");
-        // result.setOutTradeNo(paramsMap.get("out_trade_no"));
-        // result.setTradeNo(paramsMap.get("trade_no"));
-        // result.setAmount(new BigDecimal(paramsMap.get("total_amount")));
-        // result.setBuyerId(paramsMap.get("buyer_id"));
+        result.setOutTradeNo(params.get("out_trade_no"));
+        result.setTradeNo(params.get("trade_no"));
+        result.setAmount(new BigDecimal(params.get("total_amount")));
+        result.setBuyerId(params.get("buyer_id"));
+
+        // 支付时间（格式：yyyy-MM-dd HH:mm:ss）
+        if (params.get("gmt_payment") != null) {
+            result.setPaidAt(LocalDateTime.parse(params.get("gmt_payment"),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
+
+        result.setRawParams(rawBody);
         return result;
+    }
+
+    /** 将 URL-encoded 表单字符串解析为 Map */
+    private Map<String, String> parseFormBody(String rawBody) {
+        var params = new java.util.HashMap<String, String>();
+        if (rawBody == null || rawBody.isBlank()) {
+            return params;
+        }
+        for (String pair : rawBody.split("&")) {
+            String[] kv = pair.split("=", 2);
+            if (kv.length == 2) {
+                String key = java.net.URLDecoder.decode(kv[0], java.nio.charset.StandardCharsets.UTF_8);
+                String value = java.net.URLDecoder.decode(kv[1], java.nio.charset.StandardCharsets.UTF_8);
+                params.put(key, value);
+            }
+        }
+        return params;
     }
 
     private TradeStatus parseAlipayStatus(String tradeStatus) {
