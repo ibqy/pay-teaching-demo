@@ -134,6 +134,7 @@ pay-teaching-demo/
 │   └── src/main/
 │       ├── java/com/xb/pay/demo/
 │       │   ├── PayDemoApplication
+│       │   ├── common/   ApiResponse + GlobalExceptionHandler（统一响应+全局异常）
 │       │   ├── config/   PayConfig
 │       │   ├── controller/PayDemoController
 │       │   ├── aspect/   IdempotentAspect（AOP 幂等拦截）
@@ -163,6 +164,8 @@ pay-teaching-demo/
 | **幂等切面** | `@Idempotent` 注解 + AOP（SpEL key + TTL 过期） |
 | **事件驱动 + DLQ** | Spring Event 异步处理 + 3 次重试 + 死信队列 |
 | **DB 持久化** | JPA Entity + Repository + `@PrePersist`/`@PreUpdate` 时间戳 |
+| **全局异常处理** | `@RestControllerAdvice` + `ApiResponse` 统一错误响应格式 |
+| **参数校验** | `spring-boot-starter-validation` + `@Valid` 请求参数校验 |
 
 ### 教学简化（生产需增强）
 
@@ -188,7 +191,8 @@ pay-teaching-demo/
 | `common` | `OrderNoGeneratorTest` | 5 | 格式校验、唯一性、序列递增 |
 | `common` | `TradeStatusTest` | 12 | 状态机流转（WAITING→SUCCESS/FAILED/CLOSED、SUCCESS→REFUNDING、终态不可变） |
 | `reconciliation` | `ReconciliationEngineTest` | 9 | 全匹配、长款、短款、金额不符、时间偏差、混合场景、空数据、金额汇总 |
-| **合计** | | **26** | |
+| `pay-demo` | `GlobalExceptionHandlerTest` | 6 | 统一响应封装、参数异常、校验异常、缺少参数、未知异常 |
+| **合计** | | **32** | |
 
 ```bash
 mvn test -pl common,reconciliation -am
