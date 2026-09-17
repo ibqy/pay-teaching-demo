@@ -48,6 +48,11 @@ import java.math.BigDecimal;
 @Service
 public class WechatPayServiceImpl implements UnifiedPayService {
 
+    @Override
+    public PayChannel channel() {
+        return PayChannel.WECHAT;
+    }
+
     private static final Logger log = LoggerFactory.getLogger(WechatPayServiceImpl.class);
 
     private final WechatPayConfig config;

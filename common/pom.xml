@@ -6,4 +6,12 @@
     <parent><groupId>com.xb</groupId><artifactId>pay-teaching-demo</artifactId><version>1.0.0</version></parent>
     <artifactId>common</artifactId>
     <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

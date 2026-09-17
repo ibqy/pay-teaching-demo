@@ -38,6 +38,11 @@ import java.util.Map;
 @Service
 public class AlipayPayServiceImpl implements UnifiedPayService {
 
+    @Override
+    public PayChannel channel() {
+        return PayChannel.ALIPAY;
+    }
+
     private static final Logger log = LoggerFactory.getLogger(AlipayPayServiceImpl.class);
 
     private final AlipayConfig config;

@@ -1,5 +1,6 @@
 package com.xb.pay.core.api;
 
+import com.xb.pay.common.enums.PayChannel;
 import com.xb.pay.common.model.*;
 
 /**
@@ -13,6 +14,9 @@ import com.xb.pay.common.model.*;
  * <p><b>生产场景</b>：商户系统同时对接支付宝/微信/银联/PayPal，统一接口 + 策略工厂管理。</p>
  */
 public interface UnifiedPayService {
+
+    /** 返回当前实现对应的支付渠道 */
+    PayChannel channel();
 
     /** 统一下单 */
     PayResponse placeOrder(PayOrder order);
