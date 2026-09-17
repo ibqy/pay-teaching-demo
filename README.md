@@ -10,11 +10,15 @@
 ```
         ┌───────────────── pay-demo ─────────────────┐
         │  PayDemoController   +   index.html (UI)    │
+        │  IdempotentAspect（幂等切面）               │
+        │  PayEventPublisher / Consumer / DLQ         │
+        │  PayOrderRepository（JPA 持久化）           │
         └──────┬─────────────────────┬────────────────┘
                │                     │
         ┌──────┴────────────┐ ┌──────┴──────────────┐
         │   pay-core        │ │ reconciliation      │
         │ 统一支付接口+工厂  │ │ 对账引擎+账单解析    │
+        │ RoutingEngine路由  │ │                     │
         └──────┬────────────┘ └─────────────────────┘
                │
         ┌──────┴──────┐          ┌───────┴───────┐
@@ -23,7 +27,7 @@
         └─────────────┘          └───────────────┘
                │                         │
                └─────── common ──────────┘
-               支付模型 / 枚举 / 异常 / 工具
+               支付模型 / 枚举(状态机) / 幂等注解 / 事件 / 异常 / 工具
 ```
 
 ## 6 模块
@@ -45,14 +49,18 @@
 | **设计模式** | 策略模式（多支付渠道） | `UnifiedPayService` + `PayStrategyFactory` |
 | **签名验签** | RSA2 签名 / Wechatpay-Signature 验签 | `AlipayPayServiceImpl` / `WechatPayServiceImpl` |
 | **幂等性** | 异步通知必须去重处理 | `NotifyResult` |
+| **幂等切面** | `@Idempotent` 注解 + AOP 拦截（SpEL key + TTL） | `IdempotentAspect` |
 | **金额单位** | 支付宝"元" / 微信"分" 转换 | `yuanToFen` / `fenToYuan` |
 | **沙箱环境** | 支付宝沙箱地址 vs 生产地址 | `application.yml` |
-| **状态机** | 交易状态流转 | `TradeStatus` 枚举 |
+| **状态机** | 交易状态流转 + `canTransitionTo` 守卫 | `TradeStatus` |
 | **异常处理** | 业务异常 vs 系统异常 | `PayException` |
 | **订单号** | 唯一订单号生成策略 | `OrderNoGenerator` |
 | **对账** | 渠道账单下载 → CSV解析 → 逐笔比对 → 差异报告 | `ReconciliationEngine` |
 | **差异分析** | 长款/短款/金额不符/时间偏差 | `ReconDiff` |
 | **单位转换** | 微信对账单金额单位"分"转"元" | `WechatCsvParser` |
+| **事件驱动** | Spring Event 异步事件 + 重试 + 死信队列 | `PayEventPublisher` / `Consumer` / `DeadLetterQueue` |
+| **DB 持久化** | JPA 实体 + Repository + 生命周期回调 | `PayOrderEntity` / `PayOrderRepository` |
+| **路由引擎** | 费率 + 权重 + 支付方式兼容性 → 最优渠道选择 | `RoutingEngine` / `ChannelMeta` |
 
 ## 快速启动
 
@@ -97,14 +105,17 @@ pay-teaching-demo/
 ├── pom.xml                          # 聚合父工程
 ├── common/                          # 公共模块
 │   └── src/main/java/com/xb/pay/common/
-│       ├── enums/    PayChannel, PayMethod, TradeStatus
-│       ├── model/    PayOrder, PayResponse, NotifyResult, RefundRequest/Response
-│       ├── exception/PayException
-│       └── util/     OrderNoGenerator
-├── pay-core/                        # 支付核心（统一接口 + 策略工厂）
+│       ├── annotation/  @Idempotent（幂等注解：SpEL key + TTL）
+│       ├── enums/       PayChannel, PayMethod, TradeStatus（状态机）
+│       ├── event/       PayEvent（异步事件 + 重试计数）
+│       ├── model/       PayOrder, PayResponse, NotifyResult, RefundRequest/Response
+│       ├── exception/   PayException
+│       └── util/        OrderNoGenerator
+├── pay-core/                        # 支付核心（统一接口 + 策略工厂 + 路由）
 │   └── src/main/java/com/xb/pay/core/
 │       ├── api/         UnifiedPayService
-│       └── strategy/    PayStrategyFactory
+│       ├── strategy/    PayStrategyFactory
+│       └── routing/     RoutingEngine, ChannelMeta
 ├── pay-alipay/                      # 支付宝对接
 │   └── src/main/java/com/xb/pay/alipay/
 │       ├── config/      AlipayConfig
@@ -124,7 +135,10 @@ pay-teaching-demo/
 │       ├── java/com/xb/pay/demo/
 │       │   ├── PayDemoApplication
 │       │   ├── config/   PayConfig
-│       │   └── controller/PayDemoController
+│       │   ├── controller/PayDemoController
+│       │   ├── aspect/   IdempotentAspect（AOP 幂等拦截）
+│       │   ├── event/    PayEventPublisher, PayEventConsumer, DeadLetterQueue
+│       │   └── db/       PayOrderEntity, PayOrderRepository（JPA 持久化）
 │       └── resources/
 │           ├── application.yml
 │           └── templates/index.html
@@ -144,7 +158,11 @@ pay-teaching-demo/
 | 策略模式路由 | `UnifiedPayService` + `PayStrategyFactory` 多渠道切换 |
 | 对账引擎 | FULL OUTER JOIN 比对：长款/短款/金额不符/时间偏差 |
 | 订单号生成器 | 时间戳 + 原子序列，保证唯一性 |
-| 路由引擎 | 基于费率/权重的渠道自动选择 |
+| 路由引擎 | 基于费率/权重/支付方式兼容性的渠道自动选择 |
+| **状态机守卫** | `TradeStatus.canTransitionTo()` 防止非法状态流转 |
+| **幂等切面** | `@Idempotent` 注解 + AOP（SpEL key + TTL 过期） |
+| **事件驱动 + DLQ** | Spring Event 异步处理 + 3 次重试 + 死信队列 |
+| **DB 持久化** | JPA Entity + Repository + `@PrePersist`/`@PreUpdate` 时间戳 |
 
 ### 教学简化（生产需增强）
 
@@ -168,8 +186,9 @@ pay-teaching-demo/
 | 模块 | 测试类 | 用例数 | 覆盖场景 |
 |------|--------|--------|----------|
 | `common` | `OrderNoGeneratorTest` | 5 | 格式校验、唯一性、序列递增 |
+| `common` | `TradeStatusTest` | 12 | 状态机流转（WAITING→SUCCESS/FAILED/CLOSED、SUCCESS→REFUNDING、终态不可变） |
 | `reconciliation` | `ReconciliationEngineTest` | 9 | 全匹配、长款、短款、金额不符、时间偏差、混合场景、空数据、金额汇总 |
-| **合计** | | **14** | |
+| **合计** | | **26** | |
 
 ```bash
 mvn test -pl common,reconciliation -am
