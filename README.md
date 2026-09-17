@@ -69,7 +69,7 @@
 cd pay-teaching-demo
 
 # 启动（无需构建）
-mvn -pl pay-demo spring-boot-run
+mvn -pl pay-demo spring-boot:run
 
 # 打开浏览器访问
 open http://localhost:8080
@@ -144,7 +144,9 @@ pay-teaching-demo/
 │           ├── application.yml
 │           └── templates/index.html
 ├── docs/                            # 教学文档
-│   └── 01-pay-knowledge.md
+│   ├── 01-pay-knowledge.md
+│   ├── 02-reconciliation.md
+│   └── 03-alipay notify.md
 └── README.md
 ```
 
