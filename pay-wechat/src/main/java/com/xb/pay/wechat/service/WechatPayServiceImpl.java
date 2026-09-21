@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 微信支付实现（API v3）
@@ -79,11 +81,6 @@ public class WechatPayServiceImpl implements UnifiedPayService {
         this.jsapiPayService = new JsapiPayService.Builder().config(sdkConfig).build();
         this.h5PayService = new H5PayService.Builder().config(sdkConfig).build();
         this.refundService = new RefundService.Builder().config(sdkConfig).build();
-    }
-
-    @Override
-    public PayChannel channel() {
-        return PayChannel.WECHAT;
     }
 
     @Override
@@ -233,15 +230,22 @@ public class WechatPayServiceImpl implements UnifiedPayService {
 
         var parser = new NotificationParser((NotificationConfig) sdkConfig);
         var param = new RequestParam();
+        // TODO: parseNotify 方法签名需增加 Wechatpay-Serial/Timestamp/Nonce 等 Header 参数
         // param.setSerial(header("Wechatpay-Serial"));
         // param.setSignature(header("Wechatpay-Signature"));
         // param.setTimestamp(header("Wechatpay-Timestamp"));
         // param.setNonce(header("Wechatpay-Nonce"));
-        // param.setBody(rawBody);
-        // Transaction tx = parser.parse(param, Transaction.class);
+        param.setBody(rawBody);
+        Transaction tx = parser.parse(param, Transaction.class);
 
         var result = new NotifyResult();
         result.setChannel("wechat");
+        result.setOutTradeNo(tx.getOutTradeNo());
+        result.setTradeNo(tx.getTransactionId());
+        result.setAmount(fenToYuan(tx.getAmount().getTotal()));
+        result.setPaidAt(tx.getSuccessTime() != null
+                ? LocalDateTime.parse(tx.getSuccessTime(), DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                : null);
         return result;
     }
 

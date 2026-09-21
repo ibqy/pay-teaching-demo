@@ -67,11 +67,6 @@ public class AlipayPayServiceImpl implements UnifiedPayService {
     }
 
     @Override
-    public PayChannel channel() {
-        return PayChannel.ALIPAY;
-    }
-
-    @Override
     public PayResponse placeOrder(PayOrder order) {
         return switch (order.method()) {
             case NATIVE -> precreate(order);     // 扫码支付
