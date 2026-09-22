@@ -12,6 +12,14 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+/**
+ * PayEventConsumer - 支付事件消费者，异步处理 PAY_SUCCESS 事件
+ *
+ * 使用 @Async + @EventListener 实现异步消费，
+ * 失败时递归重试（最多 3 次），超过上限推入死信队列。
+ *
+ * @author ibqy
+ */
 @Component
 public class PayEventConsumer {
 
@@ -26,6 +34,10 @@ public class PayEventConsumer {
         this.deadLetterQueue = deadLetterQueue;
     }
 
+    /**
+     * 异步消费支付事件，更新订单状态，失败时递归重试
+     * @param event 支付事件
+     */
     @Async
     @EventListener
     public void handlePayEvent(PayEvent event) {

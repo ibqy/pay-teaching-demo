@@ -4,14 +4,12 @@ import com.xb.pay.common.enums.PayChannel;
 import com.xb.pay.common.model.*;
 
 /**
- * 统一支付接口 —— 策略模式
- * <p>作者：xb | 日期：2026-09-12</p>
+ * UnifiedPayService - 统一支付接口（策略模式）
  *
- * <p><b>知识点</b>：定义统一的支付抽象接口，各渠道实现（支付宝/微信）通过策略模式注入。
- * 业务层只依赖该接口，不依赖具体 SDK，切换渠道只需替换实现类。
- * 符合 DIP（依赖倒置原则）：抽象不依赖细节，细节依赖抽象。</p>
+ * 定义下单、查询、退款、关单、解析通知五大操作，
+ * 各渠道（支付宝/微信）通过实现类注入，业务层只依赖此接口，符合 DIP 原则。
  *
- * <p><b>生产场景</b>：商户系统同时对接支付宝/微信/银联/PayPal，统一接口 + 策略工厂管理。</p>
+ * @author ibqy
  */
 public interface UnifiedPayService {
 

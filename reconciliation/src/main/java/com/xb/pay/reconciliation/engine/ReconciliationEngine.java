@@ -11,22 +11,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
- * 对账引擎 — 核心业务逻辑
- * <p>
- * ---- 完整对账链路 ----
- * ① 下载渠道对账单文件（BillDownloader）
- * ② 解析为标准化记录（BillParser → List{@code <ChannelBillRecord>}）
- * ③ 从本地数据库查询对应日期的支付订单（调用方传入）
- * ④ 以 outTradeNo 为关联键做 FULL OUTER JOIN 比对
- * ⑤ 生成 ReconReport（一致统计 + 差异明细）
- * <p>
- * ---- 差异类型判断规则 ----
- * | 场景                                | 差异类型         | 说明               |
- * |-------------------------------------|-----------------|--------------------|
- * | 渠道有记录，本地 Map 中找不到         | LONG_SHORT      | 长款：渠道单边账    |
- * | 本地有记录，渠道 Map 中找不到         | SHORT_LONG      | 短款：渠道漏回调    |
- * | 双方都有，但渠道金额 ≠ 本地金额       | AMOUNT_MISMATCH | 金额不一致          |
- * | 双方都有，金额一致，但支付时间差 > 5min | TIME_MISMATCH   | 时间偏差大（可告警） |
+ * ReconciliationEngine - 对账引擎，T+1 对账的核心业务逻辑
+ *
+ * 完整流程：下载账单 → 解析为标准化记录 → 构建本地 Map → FULL OUTER JOIN 比对。
+ * 差异类型包括：长款（渠道有本地无）、短款（本地有渠道无）、金额不一致、时间偏差。
+ *
+ * @author ibqy
  */
 public class ReconciliationEngine {
 

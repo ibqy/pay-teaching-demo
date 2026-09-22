@@ -11,9 +11,9 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * 全局异常处理器 + 统一响应封装 单元测试
+ * GlobalExceptionHandlerTest - 全局异常处理器 + 统一响应封装单元测试
  *
- * <p>作者：xb | 日期：2026-09-17</p>
+ * @author ibqy
  */
 @DisplayName("全局异常处理器测试")
 class GlobalExceptionHandlerTest {

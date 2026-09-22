@@ -15,10 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 对账演示服务 — 组装完整链路
- * <p>
- * 真实场景中 {@code queryLocalOrders} 应查询数据库，
- * 此处演示简化：硬编码一组本地订单，包含部分与渠道一致的、部分不一致的模拟数据。
+ * ReconDemoService - 对账演示服务，组装下载→解析→比对的完整链路
+ *
+ * 真实场景中 queryLocalOrders 应查数据库，此处硬编码模拟数据以演示差异检测。
+ * 包含匹配、金额不一致、短款等典型场景。
+ *
+ * @author ibqy
  */
 @Service
 public class ReconDemoService {

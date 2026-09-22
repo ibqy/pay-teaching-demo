@@ -1,12 +1,12 @@
 package com.xb.pay.alipay.config;
 
 /**
- * 支付宝配置
- * <p>作者：xb | 日期：2026-09-12</p>
+ * AlipayConfig - 支付宝对接配置
  *
- * <p><b>知识点</b>：支付宝对接前需要准备以下配置，
- * 在蚂蚁开放平台（open.alipay.com）申请。
- * 开发阶段可使用"沙箱环境"模拟真实支付，无需真实商户资质。</p>
+ * 在蚂蚁开放平台申请 AppId 和密钥，开发阶段可用沙箱环境。
+ * 生产环境私钥应存储在 KMS 或环境变量中，不要硬编码。
+ *
+ * @author ibqy
  */
 public class AlipayConfig {
 

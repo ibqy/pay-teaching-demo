@@ -4,17 +4,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 交易状态 —— 支付状态机
+ * TradeStatus - 交易状态枚举（支付状态机）
  *
- * <p>作者：xb | 日期：2026-09-12</p>
+ * 状态流转：WAITING → SUCCESS/FAILED → REFUNDING → REFUNDED，
+ * WAITING → CLOSED（超时关单）。{@link #canTransitionTo} 提供状态守卫，
+ * 是资金安全的最后一道防线。
  *
- * <p><b>知识点</b>：支付状态机流转关系。
- * WAITING → SUCCESS / FAILED → REFUNDING → REFUNDED
- * WAITING → CLOSED（用户主动取消或超时关单）</p>
- *
- * <p><b>高阶实战</b>：{@link #canTransitionTo} 提供状态守卫，
- * 防止非法操作（如对 WAITING 订单退款、对 SUCCESS 订单关单）。
- * 生产系统中，状态机是资金安全的最后一道防线。</p>
+ * @author ibqy
  */
 public enum TradeStatus {
     WAITING,     // 待支付（已下单，二维码已展示）

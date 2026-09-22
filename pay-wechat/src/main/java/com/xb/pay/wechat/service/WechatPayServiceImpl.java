@@ -33,19 +33,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * 微信支付实现（API v3）
- * <p>作者：xb | 日期：2026-09-12</p>
+ * WechatPayServiceImpl - 微信支付实现（API v3，UnifiedPayService 的微信策略）
  *
- * <p><b>知识点</b>：
- * <ul>
- *   <li>微信支付 API v3 与 v2 的区别：v3 用 RESTful API + JSON 格式，v2 用 XML</li>
- *   <li>证书体系：商户私钥签名请求，微信公钥验签回调</li>
- *   <li>支付产品：Native（扫码）、JSAPI（公众号/小程序）、H5（手机网页）、App</li>
- *   <li>金额单位：微信金额以"分"为单位（整数），与支付宝"元"（小数）不同，
- *       对接时需注意转换：元 × 100 = 分</li>
- *   <li>回调通知：POST 到 notifyUrl，通过 Wechatpay-Signature 和 Wechatpay-Timestamp 验签，
- *       回调 body 是加密的 JSON，需要用 apiV3Key 解密</li>
- * </ul></p>
+ * 演示对接微信 SDK：Native 扫码、JSAPI 公众号/小程序、H5 手机网页支付，
+ * 以及退款、关单、回调验签解密。注意微信金额单位为"分"，需与"元"互转。
+ *
+ * @author ibqy
  */
 @Service
 public class WechatPayServiceImpl implements UnifiedPayService {

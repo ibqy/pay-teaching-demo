@@ -2,6 +2,14 @@ package com.xb.pay.common.event;
 
 import java.math.BigDecimal;
 
+/**
+ * PayEvent - 支付事件模型，用于 Spring Event 异步通知
+ *
+ * 当异步通知处理完成后发布此事件，驱动下游业务（如更新订单状态）。
+ * 内置重试计数，超过最大次数后进入死信队列，演示事件驱动 + 容错机制。
+ *
+ * @author ibqy
+ */
 public class PayEvent {
 
     private String channel;

@@ -1,8 +1,12 @@
 package com.xb.pay.common.enums;
 
 /**
- * 支付渠道
- * <p>作者：xb | 日期：2026-09-12</p>
+ * PayChannel - 支付渠道枚举
+ *
+ * 定义系统支持的第三方支付渠道。
+ * 新增渠道时只需在此添加枚举值并实现对应的 UnifiedPayService。
+ *
+ * @author ibqy
  */
 public enum PayChannel {
     ALIPAY,   // 支付宝

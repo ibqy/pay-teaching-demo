@@ -13,20 +13,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * 全局异常处理器
+ * GlobalExceptionHandler - 全局异常处理器
  *
- * <p>作者：xb | 日期：2026-09-17</p>
+ * 使用 @RestControllerAdvice 集中处理所有 Controller 异常，
+ * 配合 ApiResponse 返回结构化错误信息，避免在每个接口写 try-catch。
  *
- * <p><b>教学知识点</b>：{@code @RestControllerAdvice} 是 Spring 提供的全局异常拦截机制，
- * 可以集中处理所有 Controller 抛出的异常，避免在每个接口里写 try-catch。
- * 配合 {@link ApiResponse} 统一返回格式，让前端拿到结构化的错误信息。</p>
- *
- * <p>本支付项目特有的异常场景：</p>
- * <ul>
- *   <li>{@link IllegalArgumentException} — 查询不存在的订单等参数校验失败</li>
- *   <li>{@link MethodArgumentNotValidException} — {@code @Valid} 校验失败（如退款请求字段缺失）</li>
- *   <li>{@link MissingServletRequestParameterException} — GET 接口缺少必填参数</li>
- * </ul>
+ * @author ibqy
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {

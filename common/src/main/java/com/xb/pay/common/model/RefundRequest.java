@@ -6,8 +6,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 退款请求
- * <p>作者：xb | 日期：2026-09-12</p>
+ * RefundRequest - 退款请求模型
+ *
+ * 封装退款所需参数，outTradeNo 定位原订单，
+ * refundAmount 支持部分退款（不超过原支付金额）。
+ *
+ * @author ibqy
  */
 public class RefundRequest {
 

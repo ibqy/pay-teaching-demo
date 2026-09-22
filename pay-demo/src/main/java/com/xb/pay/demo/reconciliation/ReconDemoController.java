@@ -7,9 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 对账演示 Controller — 手动触发对账
- * <p>GET /api/recon/alipay — 执行支付宝对账演示</p>
- * <p>GET /api/recon/wechat — 执行微信对账演示</p>
+ * ReconDemoController - 对账演示控制器，提供手动触发对账的 REST 接口
+ *
+ * GET /api/recon/alipay 和 /api/recon/wechat 分别触发对应渠道的对账流程，
+ * 返回结构化的对账报告供前端展示。
+ *
+ * @author ibqy
  */
 @RestController
 @RequestMapping("/api/recon")

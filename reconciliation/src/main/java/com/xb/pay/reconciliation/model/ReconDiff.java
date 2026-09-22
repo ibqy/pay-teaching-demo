@@ -3,12 +3,12 @@ package com.xb.pay.reconciliation.model;
 import java.math.BigDecimal;
 
 /**
- * 对账差异记录 — 比对后发现的每一笔不一致
- * ---- 差异类型（diffType）说明 ----
- * LONG_SHORT:      长款 — 渠道有记录，本地没有（渠道单边账 / 本地丢单）
- * SHORT_LONG:      短款 — 本地有记录，渠道没有（渠道漏单 / 未回调）
- * AMOUNT_MISMATCH: 金额不一致 — 渠道金额 != 本地金额（需人工核查）
- * TIME_MISMATCH:   时间偏差超阈值（渠道与本地支付时间差距过大）
+ * ReconDiff - 对账差异记录
+ *
+ * 记录每一笔比对不一致的明细，差异类型包括：
+ * LONG_SHORT（长款）、SHORT_LONG（短款）、AMOUNT_MISMATCH、TIME_MISMATCH。
+ *
+ * @author ibqy
  */
 public class ReconDiff {
 

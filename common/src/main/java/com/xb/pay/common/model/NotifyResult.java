@@ -4,17 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 异步通知结果（三方支付回调解析后的统一模型）
- * <p>作者：xb | 日期：2026-09-12</p>
+ * NotifyResult - 异步通知结果（三方支付回调解析后的统一模型）
  *
- * <p><b>知识点</b>：异步通知是支付中最重要的环节。
- * <ul>
- *   <li>支付成功后，支付宝/微信会 POST 通知到商户 notifyUrl</li>
- *   <li>商户收到通知必须验签 → 判断状态 → 处理业务 → 返回成功</li>
- *   <li>收到通知后返回 "success"（微信）/ "success"（支付宝），
- *       否则会重复通知（最多 5 次）</li>
- *   <li>幂等处理：同一个通知可能收到多次，必须用 outTradeNo 去重</li>
- * </ul></p>
+ * 支付宝和微信的回调参数格式不同，统一解析为此模型。
+ * 核心流程：验签 → 解析 → 幂等处理 → 返回 success 告知渠道停止重发。
+ *
+ * @author ibqy
  */
 public class NotifyResult {
 

@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 本地订单宽口径 — 从本地支付订单表查询出的记录
- * 只提取对账关心的字段，不需要整张订单的全部属性。
- * 关联键：outTradeNo（商户订单号），与 ChannelBillRecord.outTradeNo 做 JOIN
+ * LocalOrderRecord - 本地订单记录（从本地数据库提取的对账宽表）
+ *
+ * 只提取对账关心的字段，通过 outTradeNo 与 ChannelBillRecord 做 JOIN 比对。
+ *
+ * @author ibqy
  */
 public class LocalOrderRecord {
 

@@ -14,6 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * NotifyService - 异步通知处理服务，支付回调的核心业务逻辑
+ *
+ * 接收三方通知后执行：幂等校验 → 金额核对 → 更新订单 → 发布事件。
+ * 使用 @Idempotent 防重复处理，@Transactional 保证事务一致性。
+ *
+ * @author ibqy
+ */
 @Service
 public class NotifyService {
 
@@ -26,6 +34,12 @@ public class NotifyService {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * 处理三方支付异步通知：幂等保护 → 金额校验 → 更新订单 → 发布事件
+     * @param outTradeNo 商户订单号
+     * @param result 解析后的通知结果
+     * @param channel 支付渠道标识
+     */
     @Idempotent(key = "#outTradeNo", ttl = 600)
     @Transactional
     public void handleNotify(String outTradeNo, NotifyResult result, String channel) {

@@ -18,6 +18,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * ReconciliationEngineTest - 对账引擎单元测试
+ *
+ * 覆盖全匹配、长款、短款、金额不一致、时间偏差及混合场景。
+ *
+ * @author ibqy
+ */
 @DisplayName("ReconciliationEngine 对账引擎测试")
 class ReconciliationEngineTest {
 

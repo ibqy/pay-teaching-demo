@@ -25,15 +25,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 /**
- * 支付宝支付实现
- * <p>作者：xb | 日期：2026-09-12</p>
+ * AlipayPayServiceImpl - 支付宝支付实现（UnifiedPayService 的支付宝策略）
  *
- * <p><b>知识点</b>：
- * <ul>
- *   <li>支付宝 SDK 核心类：AlipayClient（网关客户端）、AlipayRequest（请求）、AlipayResponse（响应）</li>
- *   <li>支付产品：电脑网站支付（trade.page.pay）、手机网站（trade.wap.pay）、扫码（trade.precreate）</li>
- *   <li>签名：商户请求用 appPrivateKey 签名，支付宝响应/通知用 alipayPublicKey 验签</li>
- * </ul></p>
+ * 演示对接支付宝 SDK 的核心流程：签名下单、查询订单、退款、关单、解析异步通知。
+ * 支持扫码（precreate）、网站（pagePay）、手机网页（wapPay）、APP 四种支付方式。
+ *
+ * @author ibqy
  */
 @Service
 public class AlipayPayServiceImpl implements UnifiedPayService {

@@ -1,16 +1,12 @@
 package com.xb.pay.common.model;
 
 /**
- * 支付响应（下单后返回给客户端的参数）
- * <p>作者：xb | 日期：2026-09-12</p>
+ * PayResponse - 支付响应（下单后返回给客户端的支付参数）
  *
- * <p><b>知识点</b>：不同支付方式返回给前端的支付参数不同：
- * <ul>
- *   <li>NATIVE：返回二维码 URL（codeUrl），前端展示二维码</li>
- *   <li>JSAPI：返回 prepayId，前端调起微信支付</li>
- *   <li>H5/APP：返回跳转 URL 或唤起参数</li>
- *   <li>WEB：返回表单 HTML，自动 POST 到支付宝</li>
- * </ul></p>
+ * 不同支付方式返回内容不同：NATIVE 返回二维码 URL，
+ * JSAPI/APP 返回唤起参数，H5 返回跳转链接，网页支付返回表单 HTML。
+ *
+ * @author ibqy
  */
 public class PayResponse {
 

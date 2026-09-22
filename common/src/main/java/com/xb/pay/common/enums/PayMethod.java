@@ -1,12 +1,12 @@
 package com.xb.pay.common.enums;
 
 /**
- * 支付方式（场景）
- * <p>作者：xb | 日期：2026-09-12</p>
+ * PayMethod - 支付方式枚举（支付场景）
  *
- * <p><b>知识点</b>：不同场景对应不同的支付产品。
- * 支付宝：APP / 网站 / WAP 手机网页
- * 微信：JSAPI（公众号/小程序） / Native（扫码） / H5（手机网页） / APP</p>
+ * 不同场景对应不同的支付产品：支付宝支持 NATIVE/APP/H5，
+ * 微信支持 NATIVE/JSAPI/H5/APP。NATIVE 在两端分别对应扫码和预下单。
+ *
+ * @author ibqy
  */
 public enum PayMethod {
     /** 支付宝-电脑网站支付 ｜ 微信-Native扫码支付 */

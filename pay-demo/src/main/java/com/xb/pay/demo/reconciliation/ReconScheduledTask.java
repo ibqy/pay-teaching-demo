@@ -7,16 +7,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * 定时对账任务 — T+1 每日凌晨自动对账
- * <p>
- * 生产环境：
- * <ul>
- *   <li>每天凌晨 2:00 执行昨日对账（D-1）</li>
- *   <li>支付宝和微信各跑一次</li>
- *   <li>差异自动告警（邮件/企微/钉钉）</li>
- *   <li>无差异自动归档</li>
- * </ul>
- * 当前演示仅打印日志，方便观察。
+ * ReconScheduledTask - 定时对账任务，T+1 每日凌晨自动执行
+ *
+ * 生产环境每天凌晨 2:00 对昨日账单做全量核对，
+ * 有差异时自动告警（邮件/企微），无差异自动归档。
+ *
+ * @author ibqy
  */
 @Component
 @EnableScheduling

@@ -7,21 +7,30 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 支付配置
- * <p>作者：xb | 日期：2026-09-12</p>
+ * PayConfig - 支付配置类，从 application.yml 读取并注入各渠道配置
  *
- * <p><b>知识点</b>：生产环境中配置应从配置文件加密读取，
- * 私钥等敏感信息可存储在密钥管理服务（KMS）或环境变量中。</p>
+ * 通过 @ConfigurationProperties 将 YAML 配置映射到 AlipayConfig 和 WechatPayConfig。
+ * 生产环境私钥等敏感信息应从 KMS 或环境变量读取。
+ *
+ * @author ibqy
  */
 @Configuration
 public class PayConfig {
 
+    /**
+     * 创建支付宝配置 Bean，从 pay.alipay 前缀读取配置
+     * @return 支付宝配置对象
+     */
     @Bean
     @ConfigurationProperties(prefix = "pay.alipay")
     public AlipayConfig alipayConfig() {
         return new AlipayConfig();
     }
 
+    /**
+     * 创建微信支付配置 Bean，从 pay.wechat 前缀读取配置
+     * @return 微信支付配置对象
+     */
     @Bean
     @ConfigurationProperties(prefix = "pay.wechat")
     public WechatPayConfig wechatPayConfig() {

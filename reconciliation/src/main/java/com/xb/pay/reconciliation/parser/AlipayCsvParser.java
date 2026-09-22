@@ -14,14 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 支付宝 CSV 账单解析器
- * <p>
- * 支付宝对账单 CSV 格式（以 2025 年为例）：
- * <pre>
- * 支付宝交易号,商户订单号,交易金额,交易时间,交易状态,商品名称,...
- * 202510122200100001,OUT20251012001,49.90,2025-10-12 14:30:00,TRADE_SUCCESS,测试商品
- * </pre>
- * 第一行为表头，后面每行是一条记录。金额以"元"为单位，无需换算。
+ * AlipayCsvParser - 支付宝 CSV 账单解析器
+ *
+ * 解析支付宝对账单 CSV（UTF-8 编码，逗号分隔），
+ * 金额以"元"为单位，无需换算，直接映射为 ChannelBillRecord。
+ *
+ * @author ibqy
  */
 public class AlipayCsvParser implements BillParser {
 

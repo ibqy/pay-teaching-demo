@@ -5,15 +5,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 订单号生成器（教学简易版）
- * <p>作者：xb | 日期：2026-09-12</p>
+ * OrderNoGenerator - 订单号生成器（教学简易版）
  *
- * <p><b>知识点</b>：生产环境订单号要满足：
- * <ul>
- *   <li>唯一性：全局不重复，一般用雪花算法（Snowflake）或数据库序列</li>
- *   <li>防推断：不包含连续数字，防止恶意刷单</li>
- *   <li>可读性：含时间戳便于排查</li>
- * </ul></p>
+ * 生产环境需用足唯一性、防推断、可读性三要素，
+ * 常用雪花算法（Snowflake）或数据库序列。此处用时间戳+原子序列演示基本思路。
+ *
+ * @author ibqy
  */
 public class OrderNoGenerator {
 

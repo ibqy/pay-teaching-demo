@@ -8,6 +8,13 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * OrderNoGeneratorTest - 订单号生成器单元测试
+ *
+ * 验证生成格式（20位）、唯一性和序列递增等核心特性。
+ *
+ * @author ibqy
+ */
 @DisplayName("OrderNoGenerator 订单号生成器测试")
 class OrderNoGeneratorTest {
 

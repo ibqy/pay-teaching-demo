@@ -16,6 +16,14 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * IdempotentAspect - 幂等性 AOP 切面，拦截 @Idempotent 注解标记的方法
+ *
+ * 通过 SpEL 解析方法参数生成幂等 key，用 ConcurrentHashMap 模拟 Redis 缓存。
+ * 在 TTL 窗口期内重复请求直接抛出 PayException，防止支付接口被重复调用。
+ *
+ * @author ibqy
+ */
 @Aspect
 @Component
 public class IdempotentAspect {
@@ -25,6 +33,12 @@ public class IdempotentAspect {
     private final SpelExpressionParser parser = new SpelExpressionParser();
     private final DefaultParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
 
+    /**
+     * 环绕通知：解析 SpEL 生成幂等 key，在 TTL 内拦截重复请求
+     * @param pjp 连接点
+     * @param idempotent 幂等注解实例
+     * @return 目标方法返回值
+     */
     @Around("@annotation(idempotent)")
     public Object around(ProceedingJoinPoint pjp, Idempotent idempotent) throws Throwable {
         MethodSignature sig = (MethodSignature) pjp.getSignature();

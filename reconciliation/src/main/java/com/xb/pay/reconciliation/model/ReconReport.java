@@ -4,8 +4,12 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 对账报告 — 对账引擎的最终产出
- * 汇总统计 + 差异明细，对账人员通过这份报告判断是否需要人工介入。
+ * ReconReport - 对账报告（对账引擎的最终产出）
+ *
+ * 汇总统计（总笔数、匹配数、总金额）加差异明细，
+ * 对账人员通过此报告判断是否需要人工介入处理。
+ *
+ * @author ibqy
  */
 public class ReconReport {
 

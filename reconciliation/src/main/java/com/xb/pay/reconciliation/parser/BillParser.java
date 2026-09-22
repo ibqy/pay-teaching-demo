@@ -6,14 +6,12 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * 账单解析器接口 — 策略模式
- * <p>
- * 支付宝和微信的账单 CSV 文件格式不同（字段顺序、列名、分隔符都可能有差异），
- * 因此需要各自的实现类来解析。创建解析器实例时需要传入渠道标识。
- * <p>
- * ---- 对账知识点 ----
- * 支付宝 CSV：UTF-8 编码，字段顺序固定，以 , 分隔
- * 微信 CSV：UTF-8 with BOM 编码，字段顺序不同，以 ` 反引号分隔（视版本而定）
+ * BillParser - 账单解析器接口（策略模式）
+ *
+ * 支付宝和微信的账单格式不同（字段顺序、分隔符、金额单位），
+ * 各渠道提供自己的解析实现，将原始文件流转为统一的 ChannelBillRecord。
+ *
+ * @author ibqy
  */
 public interface BillParser {
 

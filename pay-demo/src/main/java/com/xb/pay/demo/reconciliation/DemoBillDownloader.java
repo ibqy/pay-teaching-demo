@@ -7,13 +7,12 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 
 /**
- * 演示用账单下载器 — 从 classpath 读取模拟 CSV
- * <p>
- * 生产环境需对接支付宝/微信的真实账单下载 API：
- * <ul>
- *   <li>支付宝：alipay.data.dataservice.bill.downloadurl.query → 获取下载链接 → HTTP GET</li>
- *   <li>微信：电商平台对账单下载 API（GET /v3/bill/tradebill）</li>
- * </ul>
+ * DemoBillDownloader - 演示用账单下载器，从 classpath 读取模拟 CSV
+ *
+ * 生产环境需对接真实账单下载 API：
+ * 支付宝通过 downloadurl.query 获取链接，微信通过 GET /v3/bill/tradebill 下载。
+ *
+ * @author ibqy
  */
 @Component
 public class DemoBillDownloader implements BillDownloader {

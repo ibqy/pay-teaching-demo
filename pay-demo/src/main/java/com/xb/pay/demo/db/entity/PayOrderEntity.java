@@ -4,6 +4,14 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * PayOrderEntity - 支付订单 JPA 实体，映射 pay_order 表
+ *
+ * 持久层模型，与领域模型 PayOrder 分离。
+ * 通过 @PrePersist/@PreUpdate 自动维护创建和更新时间戳。
+ *
+ * @author ibqy
+ */
 @Entity
 @Table(name = "pay_order")
 public class PayOrderEntity {

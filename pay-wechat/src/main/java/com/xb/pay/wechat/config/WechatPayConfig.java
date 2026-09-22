@@ -1,12 +1,12 @@
 package com.xb.pay.wechat.config;
 
 /**
- * 微信支付配置
- * <p>作者：xb | 日期：2026-09-12</p>
+ * WechatPayConfig - 微信支付对接配置（API v3）
  *
- * <p><b>知识点</b>：微信支付 API v3 使用证书认证（非 API 密钥模式），
- * 需要在商户平台（pay.weixin.qq.com）申请以下配置。
- * 开发阶段可使用"沙箱环境"模拟支付回调。</p>
+ * 需在商户平台（pay.weixin.qq.com）申请商户号、API 密钥和证书。
+ * v3 使用 RSA 证书认证，比 v2 的 API 密钥更安全。
+ *
+ * @author ibqy
  */
 public class WechatPayConfig {
 

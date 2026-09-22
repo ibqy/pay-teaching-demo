@@ -5,8 +5,12 @@ import com.xb.pay.common.enums.TradeStatus;
 import java.time.LocalDateTime;
 
 /**
- * 退款响应
- * <p>作者：xb | 日期：2026-09-12</p>
+ * RefundResponse - 退款响应模型
+ *
+ * 退款可能是异步的：状态为 REFUNDED 表示即时退款成功，
+ * REFUNDING 表示退款受理中，需后续查询确认最终结果。
+ *
+ * @author ibqy
  */
 public class RefundResponse {
 

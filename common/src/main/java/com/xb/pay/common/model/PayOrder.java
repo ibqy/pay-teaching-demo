@@ -8,12 +8,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 支付订单模型
- * <p>作者：xb | 日期：2026-09-12</p>
+ * PayOrder - 支付订单模型
  *
- * <p><b>知识点</b>：支付订单与业务订单（商品订单）是一对一还是多对一关系？
- * 常见设计：一条业务订单对应一条支付订单，
- * 支付订单记录 channel（微信/支付宝）、tradeNo（三方流水号）、status（状态）。</p>
+ * 承载一次支付请求的全部参数，是策略模式的核心传输对象。
+ * 业务订单与支付订单一对一设计，tradeNo 是三方平台返回的流水号。
+ *
+ * @author ibqy
  */
 public class PayOrder {
 

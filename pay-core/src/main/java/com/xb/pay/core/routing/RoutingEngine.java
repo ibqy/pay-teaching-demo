@@ -9,6 +9,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * RoutingEngine - 支付路由引擎，根据权重和费率自动选择最优渠道
+ *
+ * 演示智能路由策略：过滤已启用渠道 → 按支付方式兼容性筛选 → 按权重降序、费率升序排列。
+ * 生产环境可加入成功率、响应时间等动态指标做实时路由。
+ *
+ * @author ibqy
+ */
 public class RoutingEngine {
 
     private static final Logger log = LoggerFactory.getLogger(RoutingEngine.class);
@@ -18,6 +26,11 @@ public class RoutingEngine {
         this.channels = new ArrayList<>(channels);
     }
 
+    /**
+     * 根据支付方式选择最优支付渠道
+     * @param method 支付方式
+     * @return 选中的支付渠道，无可用渠道时返回 null
+     */
     public PayChannel route(PayMethod method) {
         List<ChannelMeta> candidates = channels.stream()
                 .filter(ChannelMeta::isEnabled)

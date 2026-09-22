@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * TradeStatus 状态机流转测试
+ * TradeStatusTest - 支付状态机流转测试
  *
- * <p>作者：ibqy | 日期：2026-09-17</p>
+ * 验证各状态的合法/非法流转路径，确保资金安全守卫有效。
  *
- * <p>验证支付状态机的合法/非法流转，确保资金安全守卫有效。</p>
+ * @author ibqy
  */
 @DisplayName("TradeStatus 状态机流转测试")
 class TradeStatusTest {

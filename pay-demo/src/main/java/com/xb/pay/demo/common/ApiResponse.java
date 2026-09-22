@@ -1,12 +1,12 @@
 package com.xb.pay.demo.common;
 
 /**
- * 统一 API 响应封装
+ * ApiResponse - 统一 API 响应封装
  *
- * <p>作者：xb | 日期：2026-09-17</p>
+ * REST 接口统一返回格式，让前端可用固定结构解析响应。
+ * 使用 Java 21 record 实现不可变数据载体。
  *
- * <p><b>教学知识点</b>：REST 接口应统一返回格式，让前端/调用方可以用固定结构解析响应。
- * 使用 Java 21 record 实现不可变数据载体，配合静态工厂方法简化创建。</p>
+ * @author ibqy
  */
 public record ApiResponse<T>(int code, String message, T data) {
 
