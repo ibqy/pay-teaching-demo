@@ -5,7 +5,8 @@ target/
 .idea/
 *.iml
 .vscode/
-.DS_Storenode_modules
+.DS_Store
+node_modules
 
 docs/.vitepress/cache
 docs/.vitepress/dist
